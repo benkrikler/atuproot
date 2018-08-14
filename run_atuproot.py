@@ -2,7 +2,7 @@
 from atuproot.AtUproot import AtUproot
 
 from datasets.datasets import get_datasets
-from sequence.config import build_sequence
+from sequence.config import read_sequence_yaml
 
 import logging
 logging.getLogger(__name__).setLevel(logging.INFO)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
                     if d.name==options.sample or \
                        d.parent==options.sample]
 
-    sequence =  build_sequence(options.sequence_cfg)
+    sequence =  read_sequence_yaml(options.sequence_cfg, output_dir=options.outdir)
 
     process = AtUproot(options.outdir,
         quiet = options.quiet,
