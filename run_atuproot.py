@@ -4,7 +4,8 @@ warnings.filterwarnings('ignore')
 
 from atuproot.AtUproot import AtUproot
 from datasets.datasets import get_datasets
-from sequence.config import read_sequence_yaml
+from fast_flow.v1 import read_sequence_yaml
+
 
 import logging
 logging.getLogger(__name__).setLevel(logging.INFO)
