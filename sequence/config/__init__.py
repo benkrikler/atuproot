@@ -7,8 +7,6 @@ __all__ = ["read_sequence_yaml", "read_sequence_dict"]
 
 def build_sequence(sequence_cfg_path):
     from ..sequence import sequence
-    from ..collectors import reader_collectors
     from ..Modules import ScribblerWrapper
-    from alphatwirl.loop import NullCollector
-    return [(ScribblerWrapper(module), NullCollector())
-                           for module in sequence] + reader_collectors
+    return [(ScribblerWrapper(reader), collector)
+            for (reader, collector) in sequence]

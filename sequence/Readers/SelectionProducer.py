@@ -1,7 +1,8 @@
+import logging
+import numpy as np
+
 import sequence.event_selection as es
 from utils.Lambda import Lambda
-
-import numpy as np
 
 class SelectionProducer(object):
     def __init__(self, **kwargs):
@@ -16,6 +17,9 @@ class SelectionProducer(object):
             "Monojet": baseline + es.baseline_selection + es.monojet_selection,
             "SingleMuon": baseline + es.baseline_selection + es.singlemuon_selection,
             "DoubleMuon": baseline + es.baseline_selection + es.doublemuon_selection,
+            "SingleElectron": baseline + es.baseline_selection + es.singleelectron_selection,
+            "DoubleElectron": baseline + es.baseline_selection + es.doubleelectron_selection,
+            "MonojetQCD": baseline + es.baseline_selection + es.monojetqcd_selection,
         }
 
         self.selections_lambda = {cutflow: [Lambda(cut) for cut in selection]
@@ -23,12 +27,12 @@ class SelectionProducer(object):
 
     def event(self, event):
         if self.debug:
+            logger = logging.getLogger(__name__)
             results = [cut(event) for cut in self.selections_lambda["SingleMuon"]]
             for idx in range(len(results)-1):
                 results[idx+1] = results[idx+1] & results[idx]
             for idx in range(len(self.selections_lambda["SingleMuon"])):
-                print(self.selections_lambda["SingleMuon"][idx].function, results[idx])
-            exit()
+                logger.info(self.selections_lambda["SingleMuon"][idx].function, results[idx])
 
         for cutflow, selection in self.selections_lambda.items():
             setattr(event, "Cutflow_{}".format(cutflow),
