@@ -9,9 +9,6 @@ logger.addHandler(handler)
 
 from .EventBuilderConfigMaker import EventBuilderConfigMaker
 from .EventBuilder import EventBuilder
-from .build_parallel import build_parallel
-
-from .yes_no import query_yes_no
 
 class AtUproot(object):
     def __init__(self, outdir,
@@ -25,10 +22,10 @@ class AtUproot(object):
                  max_blocks_per_process = -1,
                  max_files_per_dataset = -1,
                  max_files_per_process = 1,
-                 blocksize = 1000000,
+                 nevents_per_block = 1000000,
                  profile = False, profile_out_path = None
     ):
-        self.parallel = build_parallel(
+        self.parallel = alphatwirl.parallel.build_parallel(
             parallel_mode = parallel_mode,
             quiet = quiet,
             processes = process,
@@ -41,7 +38,7 @@ class AtUproot(object):
         self.max_blocks_per_process = max_blocks_per_process
         self.max_files_per_dataset = max_files_per_dataset
         self.max_files_per_process = max_files_per_process
-        self.blocksize = blocksize
+        self.nevents_per_block = nevents_per_block
         self.profile = profile
         self.profile_out_path = profile_out_path
         self.parallel_mode = parallel_mode
@@ -50,15 +47,12 @@ class AtUproot(object):
         self.parallel.begin()
         try:
             loop = self._configure(datasets, reader_collector_pairs)
-            self._run(loop)
+            return self._run(loop)
         except KeyboardInterrupt:
             logger = logging.getLogger(__name__)
             logger.warning('received KeyboardInterrupt')
-            if query_yes_no('terminate running jobs'):
-               logger.warning('terminating running jobs')
-               self.parallel.terminate()
-            else:
-               logger.warning('not terminating running jobs')
+            logger.warning('terminating running jobs')
+            self.parallel.terminate()
         self.parallel.end()
 
     def _configure(self, datasets, reader_collector_pairs):
@@ -72,7 +66,7 @@ class AtUproot(object):
         eventLoopRunner = alphatwirl.loop.MPEventLoopRunner(
             self.parallel.communicationChannel
         )
-        eventBuilderConfigMaker = EventBuilderConfigMaker(self.blocksize)
+        eventBuilderConfigMaker = EventBuilderConfigMaker(self.nevents_per_block)
         datasetIntoEventBuildersSplitter = alphatwirl.loop.DatasetIntoEventBuildersSplitter(
             EventBuilder = EventBuilder,
             eventBuilderConfigMaker = eventBuilderConfigMaker,
@@ -105,9 +99,10 @@ class AtUproot(object):
 
     def _run(self, loop):
         if not self.profile:
-            loop()
+            result = loop()
         else:
-            alphatwirl.misc.print_profile_func(
+            result = alphatwirl.misc.print_profile_func(
                func=loop,
                profile_out_path=self.profile_out_path
             )
+        return result

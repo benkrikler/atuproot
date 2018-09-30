@@ -1,33 +1,23 @@
 # atuproot
 
-Mainly use [alphatwirl](https://github.com/alphatwirl/alphatwirl),
-[numpy](https://www.numpy.org/), [uproot](https://github.com/scikit-hep/uproot)
-and [numba](https://numba.pydata.org/) to process [ROOT](https://root.cern.ch/)
-`TTrees` for data analysis.
+[alphatwirl](https://github.com/alphatwirl/alphatwirl) interface to process and read [ROOT](https://root.cern.ch/) `TTrees` with [uproot](https://github.com/scikit-hep/uproot).
 
 ## How to use
 
-Can be installed using pip:
+Can be installed via pip
 ```
-pip install --user git@github.com:benkrikler/atuproot.git
+pip install git+https://github.com/shane-breeze/atuproot.git
 ```
 
 or for developing:
 ```
-git clone git@github.com:benkrikler/atuproot.git
+git clone git@github.com:shane-breeze/atuproot.git
 cd atuproot
-pip install --user -e .
+python setup.py install
 ```
 
-Pip should take care of the requirements, such as alphatwirl, numpy, uproot, numba, pandas, pyyaml
+## Binder tutorial
 
-The code uses input files located at Imperial. Currently can't chain multiple
-files together. Run the code like so:
+An example of how to use this is shown in a binder tutorial linked below.
 
-```
-python run_atuproot.py --blocksize 100000 --ncores 4
-```
-
-to run over the MET dataset (and associated MC samples) loading in 100k events
-at a time into numpy arrays over 4 cores. You might need to reduce the
-blocksize depending on memory use.
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/shane-breeze/atuproot/master?filepath=binder%2Ftutorial.ipynb)
